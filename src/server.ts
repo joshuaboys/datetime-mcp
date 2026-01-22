@@ -38,10 +38,26 @@ function nowPayload(tz: string) {
   };
 }
 
+const MAX_INPUT_LENGTH_FOR_ERROR = 200;
+
+function formatInputForError(value: string): string {
+  // Normalize whitespace to keep logs readable and bounded.
+  const normalized = value.replace(/\s+/g, " ").trim();
+  if (normalized.length <= MAX_INPUT_LENGTH_FOR_ERROR) {
+    return normalized;
+  }
+  return (
+    normalized.slice(0, MAX_INPUT_LENGTH_FOR_ERROR) +
+    `… [truncated, original length=${normalized.length}]`
+  );
+}
+
 function parsePayload(value: string, tz: string) {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) {
-    throw new Error(`Unable to parse date value: ${value}`);
+    throw new Error(
+      `Unable to parse date value: ${formatInputForError(value)}`
+    );
   }
   return {
     input: value,
