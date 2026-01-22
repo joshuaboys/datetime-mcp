@@ -1,8 +1,10 @@
 {
   "name": "datetime-mcp",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "MCP server that returns current date/time information via stdio transport",
   "type": "module",
+  "main": "dist/server.js",
+  "types": "dist/server.d.ts",
   "license": "MIT",
   "author": "joshuaboys",
   "repository": {
