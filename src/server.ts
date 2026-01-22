@@ -7,18 +7,25 @@ const DEFAULT_TZ = process.env.MCP_TZ?.trim() || "Australia/Perth";
 
 function formatHuman(date: Date, tz: string): string {
   // Uses the runtime's Intl/ICU timezone database to render in a specific IANA timezone.
-  return new Intl.DateTimeFormat("en-GB", {
-    timeZone: tz,
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-    timeZoneName: "short",
-  }).format(date);
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz,
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+      timeZoneName: "short",
+    }).format(date);
+  } catch (err) {
+    if (err instanceof RangeError) {
+      throw new Error(`Invalid IANA timezone: ${tz}`);
+    }
+    throw err;
+  }
 }
 
 function nowPayload(tz: string) {
