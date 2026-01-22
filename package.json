@@ -1,15 +1,43 @@
 {
   "name": "datetime-mcp",
   "version": "1.0.0",
-  "description": "MCP server that returns current date/time information",
+  "description": "MCP server that returns current date/time information via stdio transport",
   "type": "module",
+  "license": "MIT",
+  "author": "joshuaboys",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshuaboys/time-mcp.git"
+  },
+  "homepage": "https://github.com/joshuaboys/time-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/joshuaboys/time-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "datetime",
+    "time",
+    "timezone",
+    "claude",
+    "anthropic"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE"
+  ],
   "bin": {
     "datetime-mcp": "dist/server.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
-    "dev": "tsx src/server.ts"
+    "dev": "tsx src/server.ts",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
