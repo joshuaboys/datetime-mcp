@@ -9,11 +9,11 @@
   "author": "joshuaboys",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joshuaboys/time-mcp.git"
+    "url": "git+https://github.com/joshuaboys/datetime-mcp.git"
   },
-  "homepage": "https://github.com/joshuaboys/time-mcp#readme",
+  "homepage": "https://github.com/joshuaboys/datetime-mcp#readme",
   "bugs": {
-    "url": "https://github.com/joshuaboys/time-mcp/issues"
+    "url": "https://github.com/joshuaboys/datetime-mcp/issues"
   },
   "keywords": [
     "mcp",
