@@ -1,0 +1,23 @@
+{
+  "name": "datetime-mcp",
+  "version": "1.0.0",
+  "description": "MCP server that returns current date/time information",
+  "type": "module",
+  "bin": {
+    "datetime-mcp": "dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "dev": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
