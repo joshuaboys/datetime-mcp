@@ -1,29 +1,32 @@
 # datetime-mcp
 
-A lightweight MCP (Model Context Protocol) server that provides date/time tools via stdio transport.
+[![npm](https://img.shields.io/npm/v/datetime-mcp)](https://www.npmjs.com/package/datetime-mcp)
+[![license](https://img.shields.io/npm/l/datetime-mcp)](./LICENSE)
 
-## Installation
+A lightweight [MCP](https://modelcontextprotocol.io) server that exposes the host OS clock as date/time tools over stdio transport.
 
-```bash
-npm install -g datetime-mcp
-```
-
-Or use directly with npx:
+## Quick Start
 
 ```bash
 npx datetime-mcp
 ```
 
+Or install globally:
+
+```bash
+npm install -g datetime-mcp
+```
+
 ## Tools
 
-### datetime.now
+### `datetime.now`
 
 Returns the current date/time from the host OS clock.
 
-**Parameters:**
-- `tz` (optional): IANA timezone string (e.g., `Australia/Perth`, `America/New_York`)
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `tz`      | no       | IANA timezone (e.g. `America/New_York`) |
 
-**Returns:**
 ```json
 {
   "tz": "Australia/Perth",
@@ -33,28 +36,15 @@ Returns the current date/time from the host OS clock.
 }
 ```
 
-### datetime.health
-
-Returns server health information including monotonic time (won't jump with NTP adjustments).
-
-**Returns:**
-```json
-{
-  "wallEpochMs": 1737516600000,
-  "monotonicMs": 12345678,
-  "processUptimeMs": 5000
-}
-```
-
-### datetime.parse
+### `datetime.parse`
 
 Parses a date/time string and returns canonical forms.
 
-**Parameters:**
-- `value` (required): A date/time string parseable by JavaScript's `Date` constructor
-- `tz` (optional): IANA timezone for human-readable output
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `value`   | yes      | Date/time string parseable by JS `Date` |
+| `tz`      | no       | IANA timezone for human-readable output |
 
-**Returns:**
 ```json
 {
   "input": "2026-01-22",
@@ -65,11 +55,23 @@ Parses a date/time string and returns canonical forms.
 }
 ```
 
+### `datetime.health`
+
+Returns server health metrics including monotonic time (won't jump with NTP adjustments).
+
+```json
+{
+  "wallEpochMs": 1737516600000,
+  "monotonicMs": 12345678,
+  "processUptimeMs": 5000
+}
+```
+
 ## Configuration
 
-### Claude Code / Claude Desktop
+### Claude Code
 
-Add to your MCP settings:
+Add to `~/.claude/settings.json` or project `.mcp.json`:
 
 ```json
 {
@@ -85,13 +87,16 @@ Add to your MCP settings:
 }
 ```
 
-Or with global install:
+### Claude Desktop
+
+Add to your Claude Desktop MCP config:
 
 ```json
 {
   "mcpServers": {
     "datetime": {
-      "command": "datetime-mcp",
+      "command": "npx",
+      "args": ["-y", "datetime-mcp"],
       "env": {
         "MCP_TZ": "Australia/Perth"
       }
@@ -102,22 +107,17 @@ Or with global install:
 
 ### Environment Variables
 
-- `MCP_TZ`: Default IANA timezone (defaults to `Australia/Perth`)
+| Variable | Default            | Description |
+|----------|--------------------|-------------|
+| `MCP_TZ` | `Australia/Perth` | Default IANA timezone |
 
 ## Development
 
 ```bash
-# Install dependencies
 pnpm install
-
-# Run in development mode
-pnpm dev
-
-# Build
-pnpm build
-
-# Start built server
-pnpm start
+pnpm dev       # run with tsx (hot reload)
+pnpm build     # compile TypeScript
+pnpm start     # run compiled output
 ```
 
 ## License
