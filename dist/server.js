@@ -5,18 +5,26 @@ import { z } from "zod";
 const DEFAULT_TZ = process.env.MCP_TZ?.trim() || "Australia/Perth";
 function formatHuman(date, tz) {
     // Uses the runtime's Intl/ICU timezone database to render in a specific IANA timezone.
-    return new Intl.DateTimeFormat("en-GB", {
-        timeZone: tz,
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-        timeZoneName: "short",
-    }).format(date);
+    try {
+        return new Intl.DateTimeFormat("en-GB", {
+            timeZone: tz,
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZoneName: "short",
+        }).format(date);
+    }
+    catch (err) {
+        if (err instanceof RangeError) {
+            throw new Error(`Invalid IANA timezone: ${tz}`);
+        }
+        throw err;
+    }
 }
 function nowPayload(tz) {
     const d = new Date(); // <-- comes from the host OS clock
@@ -27,10 +35,20 @@ function nowPayload(tz) {
         human: formatHuman(d, tz),
     };
 }
+const MAX_INPUT_LENGTH_FOR_ERROR = 200;
+function formatInputForError(value) {
+    // Normalize whitespace to keep logs readable and bounded.
+    const normalized = value.replace(/\s+/g, " ").trim();
+    if (normalized.length <= MAX_INPUT_LENGTH_FOR_ERROR) {
+        return normalized;
+    }
+    return (normalized.slice(0, MAX_INPUT_LENGTH_FOR_ERROR) +
+        `… [truncated, original length=${normalized.length}]`);
+}
 function parsePayload(value, tz) {
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) {
-        throw new Error(`Unable to parse date value: ${value}`);
+        throw new Error(`Unable to parse date value: ${formatInputForError(value)}`);
     }
     return {
         input: value,
@@ -50,7 +68,7 @@ function healthPayload() {
 async function main() {
     const server = new McpServer({
         name: "datetime-mcp",
-        version: "1.0.0",
+        version: "0.1.0",
     });
     server.tool("datetime.now", {
         tz: z.string().optional().describe("IANA timezone, e.g. Australia/Perth"),
