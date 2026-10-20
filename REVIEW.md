@@ -26,20 +26,17 @@ A lightweight MCP (Model Context Protocol) server providing date/time tools over
 
 ## Issues Found
 
-### Bug: Committed `dist/` is out of sync with source
+### Build artefacts: `dist/` checked into source control
 
-The checked-in `dist/server.js` does not match `src/server.ts`. Specifically:
+At the time of review, the committed `dist/server.js` had drifted from `src/server.ts` (it reported `version: "1.0.0"` and lacked the `try/catch` in `formatHuman`, the `formatInputForError` helper and the truncated error messages in `parsePayload`). `dist/` has since been rebuilt from source, so it now matches `src/server.ts` (it reports `version: "0.1.0"` and includes the error-handling improvements).
 
-- **Version mismatch**: `dist/server.js` reports `version: "1.0.0"` while `src/server.ts` and `package.json` both say `"0.1.0"`.
-- **Missing code**: The committed dist is missing the `try/catch` in `formatHuman`, the `formatInputForError` function, and the truncated error messages in `parsePayload`.
+However, committing build artefacts makes it easy for the compiled output to drift from the source again, as it already did once.
 
-This means anyone running the published/installed package gets an older build with fewer protections. The dist should be rebuilt and recommitted, or (better) excluded from version control entirely.
-
-**Recommendation**: Add `dist/` to `.gitignore` and remove it from git tracking. The `prepublishOnly` script already ensures dist is built before `npm publish`. Tracking build artifacts in git leads to exactly this kind of drift.
+**Recommendation**: Consider adding `dist/` to `.gitignore` and removing it from git tracking. The `prepublishOnly` script already ensures `dist/` is built before `npm publish`. Until then, rebuild `dist/` whenever `src/` changes.
 
 ### Version string duplication
 
-The version `"0.1.0"` appears in both `package.json:2` and `src/server.ts:83`. When you bump the version, you must remember to update both. This is error-prone, as demonstrated by the `dist/server.js` having `"1.0.0"` while `package.json` has `"0.1.0"`.
+The version `"0.1.0"` appears in both `package.json:3` and `src/server.ts:83`. When you bump the version, you must remember to update both, which is error-prone and can lead to confusion about which version is actually running.
 
 **Recommendation**: Read the version from `package.json` at runtime or use a build-time replacement.
 
@@ -95,12 +92,12 @@ No GitHub Actions workflow or other CI configuration exists. There is no automat
 
 | Priority | Issue | Recommendation |
 |----------|-------|----------------|
-| **High** | `dist/` out of sync | Rebuild and recommit, or add `dist/` to `.gitignore` |
 | **High** | No tool descriptions | Add description strings to all `server.tool()` calls |
 | **High** | No error handling in tool handlers | Wrap handlers in try/catch, return `isError: true` |
 | **Medium** | Duplicate version string | Read version from `package.json` at runtime |
 | **Medium** | No tests | Add unit tests for pure functions |
 | **Medium** | `Date` parsing ambiguity | Document limitations or recommend ISO 8601 input |
+| **Low** | `dist/` tracked in git | Add `dist/` to `.gitignore` (now rebuilt, so currently in sync) |
 | **Low** | Hardcoded Perth default | Consider UTC as a more neutral default |
 | **Low** | Bloated `.gitignore` | Trim to project-relevant entries |
 | **Low** | No CI/CD | Add a GitHub Actions workflow for build + test |
